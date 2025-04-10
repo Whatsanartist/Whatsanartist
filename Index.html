@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Rispondi alla Domanda</title>
+  <title>Rispondi alla Domanda</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      background: #fdfdfd;
+      max-width: 600px;
+      margin: auto;
+      padding: 2rem;
+    }
+    h1 { text-align: center; }
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+    input {
+      padding: 0.5rem;
+      border: 1px solid #aaa;
+      border-radius: 5px;
+    }
+    button {
+      padding: 0.5rem;
+      background: black;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      cursor: pointer;
+    }
+    .responses {
+      margin-top: 2rem;
+      border-top: 1px solid #ccc;
+      padding-top: 1rem;
+    }
+    .entry {
+      margin-bottom: 1rem;
+    }
+    .entry strong {
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Cos'è un artista?</h1>
+
+  <form id="response-form">
+    <input type="text" name="nome" placeholder="Il tuo nome" style="font-family: Arial, Helvetica, sans-serif;" required>
+    <input type="text" name="risposta" placeholder="La tua risposta" style="font-family: Arial, Helvetica, sans-serif;" required></input>
+    <button type="submit">Invia</button>
+  </form>
+
+  <div class="responses" id="responses">
+    <h2>Risposte degli altri</h2>
+    <div id="entries"></div>
+  </div>
+
+  <script>
+    const scriptURL = "https://script.google.com/macros/s/AKfycbxq0sbBOKYxReF4O9_-tmn5k1HI0e9jOMa0OZPrYGLcMYGi6bO6WXk-mJ0WPBqhqIYe/exec";
+
+    document.getElementById("response-form").addEventListener("submit", function(e) {
+      e.preventDefault();
+      const form = e.target;
+      const data = new FormData(form);
+
+      fetch(scriptURL, {
+        method: 'POST',
+        body: data
+      }).then(res => {
+        form.reset();
+        loadResponses();
+      });
+    });
+
+    function loadResponses() {
+      fetch(scriptURL)
+        .then(response => response.json())
+        .then(data => {
+          const container = document.getElementById("entries");
+          container.innerHTML = "";
+          data.reverse().forEach(entry => {
+            const div = document.createElement("div");
+            div.className = "entry";
+            div.innerHTML = `<strong>${entry.nome}:</strong> ${entry.risposta}`;
+            container.appendChild(div);
+          });
+        });
+    }
+
+    loadResponses(); // carica all'avvio
+  </script>
+
+</body>
+</html>
